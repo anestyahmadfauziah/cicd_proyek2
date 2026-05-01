@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+                url('/images/BG.jpeg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    overflow: hidden;
+}
+
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+    max-width: 1100px;
+    width: 100%;
+    padding: 20px;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 500px;
+}
+
+.brand-tag {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.hero-title {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.hero-desc {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+    border-left: 3px solid white;
+    padding-left: 20px;
+}
+
+.login-card {
+    flex: 0 0 400px;
+    padding: 50px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-header h4 {
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.login-header p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+}
+
+.input-wrapper {
+    margin-bottom: 20px;
+}
+
+.custom-input-group {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.custom-input-group:focus-within {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+}
+
+.icon-box {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 18px;
+}
+
+.custom-input-group input {
+    background: transparent;
+    border: none;
+    flex: 1;
+    padding: 15px 0;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.custom-input-group input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.password-toggle {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+}
+
+.password-toggle:hover {
+    color: white;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    background: white;
+    color: black;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: rgba(255,255,255,0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 992px) {
+    .main-container { 
+        flex-direction: column; 
+        gap: 40px; 
+        text-align: center; 
+    }
+
+    .hero-desc { 
+        border-left: none; 
+        padding-left: 0; 
+    }
+
+    .hero-title { 
+        font-size: 40px; 
+    }
+
+    .login-card { 
+        width: 100%; 
+    }
+}
