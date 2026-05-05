@@ -19,9 +19,9 @@ class TransaksiController extends Controller
     private function formatStatus($status)
     {
         return match ($status) {
-            'success', 'settlement', 'capture' => 'Paid',
-            'pending' => 'Pending',
-            'expire', 'cancel', 'deny' => 'Failed',
+            'success', 'settlement', 'capture' => 'Berhasil',
+            'pending' => 'Menunggu',
+            'expire', 'cancel', 'deny' => 'Gagal',
             default => ucfirst($status),
         };
     }
@@ -34,24 +34,25 @@ class TransaksiController extends Controller
         $pemesanan = Pemesanan::with(['pembayaran','destinasi','user'])
             ->when($user && $user->role === 'admin', function ($q) use ($user) {
                 $q->whereHas('destinasi', function ($q2) use ($user) {
-                    $q2->where('id_admin', $user->id);
+                    $q2->where('created_by_id', $user->id)
+                       ->where('created_by_role', 'admin');
                 });
             })
             ->get();
 
         $summary = [
-            'revenue' => $pemesanan->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0),
+            'revenue'    => $pemesanan->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0),
             'pengunjung' => $pemesanan->sum('jumlah_tiket'),
-            'transaksi' => $pemesanan->count(),
-            'pending' => $pemesanan->where('status','pending')->count()
+            'transaksi'  => $pemesanan->count(),
+            'pending'    => $pemesanan->where('status','pending')->count()
         ];
 
         $trend = $pemesanan
             ->groupBy(fn($t) => $t->tanggal_pemesanan->format('Y-m-d'))
             ->map(function ($items, $tanggal) {
                 return [
-                    'tanggal' => $tanggal,
-                    'revenue' => $items->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0),
+                    'tanggal'    => $tanggal,
+                    'revenue'    => $items->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0),
                     'pengunjung' => $items->sum('jumlah_tiket')
                 ];
             })
@@ -62,22 +63,20 @@ class TransaksiController extends Controller
             ->groupBy(fn($t) => $t->pembayaran?->metode_bayar ?? 'Lainnya')
             ->map(fn($items, $metode) => [
                 'metode' => $metode,
-                'total' => $items->count()
+                'total'  => $items->count()
             ])
             ->values();
 
         $transactions = $pemesanan->map(fn($t) => [
-            'kode' => $t->id_pemesanan,
-            'tanggal' => $t->tanggal_pemesanan->format('d M Y'),
-            'customer' => $t->user?->name ?? '-',
-            'lokasi' => $t->destinasi?->nama ?? '-',
-            'tiket' => 'Reguler Dewasa',
-            'jumlah' => $t->jumlah_tiket,
-            'pembayaran' => $t->pembayaran?->metode_bayar ?? '-',
-            'total' => $t->pembayaran?->total_bayar ?? 0,
-
-            // 🔥 FIX DI SINI
-            'status' => $this->formatStatus($t->status)
+            'kode'      => $t->id_pemesanan,
+            'tanggal'   => $t->tanggal_pemesanan->format('d M Y'),
+            'customer'  => $t->user?->name ?? '-',
+            'lokasi'    => $t->destinasi?->nama ?? '-',
+            'tiket'     => 'Reguler Dewasa',
+            'jumlah'    => $t->jumlah_tiket,
+            'pembayaran'=> $t->pembayaran?->metode_bayar ?? '-',
+            'total'     => $t->pembayaran?->total_bayar ?? 0,
+            'status'    => $this->formatStatus($t->status)
         ])->toArray();
 
         return view('transaksi.index', compact(
@@ -97,7 +96,8 @@ class TransaksiController extends Controller
 
         if ($user && $user->role === 'admin') {
             $query->whereHas('destinasi', function ($q) use ($user) {
-                $q->where('id_admin', $user->id);
+                $q->where('created_by_id', $user->id)
+                  ->where('created_by_role', 'admin');
             });
         }
 
@@ -111,7 +111,7 @@ class TransaksiController extends Controller
 
         $rekap = $query->latest()->get();
 
-        $totalTransaksi = $rekap->count();
+        $totalTransaksi  = $rekap->count();
         $totalPendapatan = $rekap->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0);
 
         $years = Pemesanan::selectRaw('EXTRACT(YEAR FROM tanggal_pemesanan) as year')
@@ -144,7 +144,8 @@ class TransaksiController extends Controller
 
         if ($user && $user->role === 'admin') {
             $query->whereHas('destinasi', function ($q) use ($user) {
-                $q->where('id_admin', $user->id);
+                $q->where('created_by_id', $user->id)
+                  ->where('created_by_role', 'admin');
             });
         }
 
@@ -158,7 +159,7 @@ class TransaksiController extends Controller
 
         $rekap = $query->get();
 
-        $totalTransaksi = $rekap->count();
+        $totalTransaksi  = $rekap->count();
         $totalPendapatan = $rekap->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0);
 
         $view = $user->role === 'admin'
@@ -179,18 +180,18 @@ class TransaksiController extends Controller
     {
         $query = Pemesanan::with(['pembayaran','destinasi','user']);
 
-        // admin wisata
         if (auth()->guard('web')->check()) {
-
             $adminId = auth()->guard('web')->id();
 
-            $destinasiIds = \App\Models\Destinasi::where('id_admin', $adminId)
-                                ->pluck('id_destinasi');
+
+            $destinasiIds = \App\Models\Destinasi::where('created_by_id', $adminId)
+                ->where('created_by_role', 'admin')
+                ->pluck('id_destinasi');
 
             $query->whereIn('id_destinasi', $destinasiIds);
         }
 
-        $pemesanan = $query->get();
+        $pemesanan = $query->latest()->get();
 
         $pdf = Pdf::loadView('transaksi.cetak', compact('pemesanan'))
             ->setPaper('A4', 'landscape');

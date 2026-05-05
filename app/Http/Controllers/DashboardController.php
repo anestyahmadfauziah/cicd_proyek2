@@ -26,12 +26,11 @@ class DashboardController extends Controller
             $user = Auth::guard('web')->user();
         }
 
-        // ❗ FIX ERROR NULL USER
         if (!$user) {
             abort(403, 'Unauthorized');
         }
 
-        $adminId = $user->id_admin; // ✅ SELALU AMBIL UUID/ID ASLI USER
+        $adminId = $user->id;
 
         $bulanIni = now()->month;
         $tahunIni = now()->year;
@@ -56,13 +55,9 @@ class DashboardController extends Controller
         // ================= ADMIN =================
         else {
 
-            // ❗ FIX UUID/INT ISSUE (WAJIB ID ASLI USER)
-           $totalDestinasi = Destinasi::where('created_by_role', 'admin')
-        ->where(function($q) use ($adminId) {
-            $q->where('created_by_id', $adminId)
-              ->orWhere('id_admin', $adminId);
-        })
-        ->count();
+            $totalDestinasi = Destinasi::where('created_by_role', 'admin')
+                ->where('created_by_id', $adminId)
+                ->count();
             $totalUsers = null;
 
             $transaksiBulanIni = DB::table('pemesanan as p')
@@ -122,7 +117,12 @@ class DashboardController extends Controller
     public function transaksi()
     {
         $isSuperAdmin = Auth::guard('superadmin')->check();
-        $user = Auth::user();
+
+        if ($isSuperAdmin) {
+            $user = Auth::guard('superadmin')->user();
+        } else {
+            $user = Auth::guard('web')->user();
+        }
 
         if (!$user) {
             abort(403);
@@ -132,18 +132,18 @@ class DashboardController extends Controller
 
         // ================= SUMMARY =================
         $summaryRevenue = DB::table('pembayaran as pay')
-            ->join('pemesanan as p','pay.id_pemesanan','=','p.id_pemesanan')
-            ->join('destinasi as d','p.id_destinasi','=','d.id_destinasi');
+            ->join('pemesanan as p', 'pay.id_pemesanan', '=', 'p.id_pemesanan')
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi');
 
         $summaryPengunjung = DB::table('pemesanan as p')
-            ->join('destinasi as d','p.id_destinasi','=','d.id_destinasi');
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi');
 
         $summaryTransaksi = DB::table('pemesanan as p')
-            ->join('destinasi as d','p.id_destinasi','=','d.id_destinasi');
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi');
 
         $summaryPending = DB::table('pemesanan as p')
-            ->join('destinasi as d','p.id_destinasi','=','d.id_destinasi')
-            ->where('p.status','pending');
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi')
+            ->where('p.status', 'pending');
 
         if (!$isSuperAdmin) {
             $summaryRevenue->where('d.created_by_id', $adminId);
@@ -153,23 +153,23 @@ class DashboardController extends Controller
         }
 
         $summary = [
-            'revenue' => $summaryRevenue->sum('total_bayar'),
+            'revenue'    => $summaryRevenue->sum('total_bayar'),
             'pengunjung' => $summaryPengunjung->sum('jumlah_tiket'),
-            'transaksi' => $summaryTransaksi->count(),
-            'pending' => $summaryPending->count(),
+            'transaksi'  => $summaryTransaksi->count(),
+            'pending'    => $summaryPending->count(),
         ];
 
         // ================= TRANSAKSI =================
-        $transactions = DB::table('pemesanan as p')
-            ->join('users as u', 'p.user_id', '=', 'u.id')
-            ->join('destinasi as d','p.id_destinasi','=','d.id_destinasi')
-            ->leftJoin('pembayaran as pay','pay.id_pemesanan','=','p.id_pemesanan');
+        $transactionQuery = DB::table('pemesanan as p')
+            ->leftJoin('users as u', 'p.user_uuid', '=', 'u.id')
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi')
+            ->leftJoin('pembayaran as pay', 'pay.id_pemesanan', '=', 'p.id_pemesanan');
 
         if (!$isSuperAdmin) {
-            $transactions->where('d.created_by_id', $adminId);
+            $transactionQuery->where('d.created_by_id', $adminId);
         }
 
-        $transactions = $transactions
+        $transactions = $transactionQuery
             ->select(
                 'p.id_pemesanan as kode',
                 'p.tanggal_pemesanan as tanggal',
@@ -181,7 +181,7 @@ class DashboardController extends Controller
                 'p.total_harga as total',
                 'pay.status_pembayaran as status'
             )
-            ->orderBy('p.tanggal_pemesanan','desc')
+            ->orderBy('p.tanggal_pemesanan', 'desc')
             ->get();
 
         // ================= TREND =================
@@ -189,109 +189,165 @@ class DashboardController extends Controller
             return date('Y-m-d', strtotime($t->tanggal));
         })->map(function ($items, $tanggal) {
             return [
-                'tanggal' => $tanggal,
-                'revenue' => $items->sum('total'),
+                'tanggal'    => $tanggal,
+                'revenue'    => $items->sum('total'),
                 'pengunjung' => $items->sum('jumlah')
             ];
         })->values();
 
-        // ================= METODE =================
+        // ================= METODE PEMBAYARAN =================
         $metodePembayaran = $transactions->groupBy(function ($t) {
             return $t->pembayaran ?? 'Lainnya';
         })->map(function ($items, $metode) {
             return [
                 'metode' => $metode,
-                'total' => $items->count()
+                'total'  => $items->count()
             ];
         })->values();
 
+        // ================= JENIS KELAMIN DARI DATABASE =================
+       $genderResult = DB::table('users')
+    ->whereNotNull('jenis_kelamin')
+    ->where('jenis_kelamin', '!=', '')
+    ->where('role', 'User')  // opsional: hanya hitung role User
+    ->selectRaw('jenis_kelamin, COUNT(*) as total')
+    ->groupBy('jenis_kelamin')
+    ->pluck('total', 'jenis_kelamin');
+
+$lakiLaki    = (int) ($genderResult['Laki-Laki'] ?? 0);
+$perempuan   = (int) ($genderResult['Perempuan'] ?? 0);
+$totalGender = $lakiLaki + $perempuan;
+
+$lakiPersen      = $totalGender > 0 ? round(($lakiLaki / $totalGender) * 100, 1) : 0;
+$perempuanPersen = $totalGender > 0 ? round(($perempuan / $totalGender) * 100, 1) : 0;
+
         return view('transaksi.index', [
-            'summary' => $summary,
-            'transactions' => $transactions,
-            'trend' => $trend,
-            'metodePembayaran' => $metodePembayaran
+            'summary'          => $summary,
+            'transactions'     => $transactions,
+            'trend'            => $trend,
+            'metodePembayaran' => $metodePembayaran,
+            'lakiLaki'         => $lakiLaki,
+            'perempuan'        => $perempuan,
+            'totalGender'      => $totalGender,
+            'lakiPersen'       => $lakiPersen,
+            'perempuanPersen'  => $perempuanPersen,
         ]);
     }
 
-    //ADMIN
-
+    // ================= ADMIN SETTINGS =================
     public function adminPengaturan()
-{
-    $user = auth()->user(); // ambil user yang login
-
-    return view('admin.settings', compact('user'));
-}
+    {
+        $user = auth()->user();
+        return view('admin.settings', compact('user'));
+    }
 
     public function updateProfile(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'nullable|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'nullable|string|max:20',
-        'bio' => 'nullable|string',
-        'location' => 'nullable|string|max:255',
-    ]);
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'nullable|string|max:255',
+            'email'      => 'required|email|max:255',
+            'phone'      => 'nullable|string|max:20',
+            'bio'        => 'nullable|string',
+            'location'   => 'nullable|string|max:255',
+        ]);
 
-    // 🔥 Ambil user dari guard yang aktif
-    if (auth('superadmin')->check()) {
-        $user = auth('superadmin')->user();
-    } else {
-        $user = auth('web')->user();
+        if (auth('superadmin')->check()) {
+            $user = auth('superadmin')->user();
+        } else {
+            $user = auth('web')->user();
+        }
+
+        if (!$user) {
+            return back()->with('error', 'User tidak ditemukan, silakan login ulang');
+        }
+
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'bio'        => $request->bio,
+            'location'   => $request->location,
+        ]);
+
+        return back()->with('success', 'Profil berhasil disimpan');
     }
-
-    // 🔥 Safety (biar ga error lagi)
-    if (!$user) {
-        return back()->with('error', 'User tidak ditemukan, silakan login ulang');
-    }
-
-    $user->update([
-        'first_name' => $request->first_name,
-        'last_name' => $request->last_name,
-        'email' => $request->email,
-        'phone' => $request->phone,
-        'bio' => $request->bio,
-        'location' => $request->location,
-    ]);
-
-    return back()->with('success', 'Profil berhasil disimpan');
-}
 
     public function updatePassword(Request $request)
-{
-    $request->validate([
-        'password_lama' => 'required',
-        'password_baru' => 'required|min:6|confirmed',
-    ]);
+    {
+        $request->validate([
+            'password_lama' => 'required',
+            'password_baru' => 'required|min:6|confirmed',
+        ]);
 
-    // ✅ Cek guard yang aktif
-    if (auth('superadmin')->check()) {
-        $user = auth('superadmin')->user();
-    } else {
-        $user = auth('web')->user();
+        if (auth('superadmin')->check()) {
+            $user = auth('superadmin')->user();
+        } else {
+            $user = auth('web')->user();
+        }
+
+        if (!$user) {
+            return back()->with('error', 'User tidak ditemukan, silakan login ulang');
+        }
+
+        if (!Hash::check($request->password_lama, $user->password)) {
+            return back()->with('error', 'Password lama salah!');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password_baru)
+        ]);
+
+        return back()->with('success', 'Password berhasil diubah!');
     }
 
-    if (!$user) {
-        return back()->with('error', 'User tidak ditemukan, silakan login ulang');
-    }
-
-    if (!Hash::check($request->password_lama, $user->password)) {
-        return back()->with('error', 'Password lama salah!');
-    }
-
-    $user->update([
-        'password' => Hash::make($request->password_baru)
-    ]);
-
-    return back()->with('success', 'Password berhasil diubah!');
-}
-    //SUPERADMIN
+    // ================= SUPERADMIN SETTINGS =================
     public function superadminPengaturan()
-{
-    $user = auth('superadmin')->user(); // ambil superadmin login
+    {
+        $user = auth('superadmin')->user();
+        return view('superadmin.settings', compact('user'));
+    }
 
-    return view('superadmin.settings', compact('user'));
-}
+    // ================= CETAK TRANSAKSI PDF =================
+    public function cetakTransaksi()
+    {
+        $isSuperAdmin = Auth::guard('superadmin')->check();
 
+        if ($isSuperAdmin) {
+            $user = Auth::guard('superadmin')->user();
+        } else {
+            $user = Auth::guard('web')->user();
+        }
 
+        if (!$user) abort(403);
+
+        $adminId = $user->id;
+
+        $query = DB::table('pemesanan as p')
+            ->leftJoin('users as u', 'p.user_uuid', '=', 'u.id')
+            ->join('destinasi as d', 'p.id_destinasi', '=', 'd.id_destinasi')
+            ->leftJoin('pembayaran as pay', 'pay.id_pemesanan', '=', 'p.id_pemesanan');
+
+        if (!$isSuperAdmin) {
+            $query->where('d.created_by_id', $adminId);
+        }
+
+        $pemesanan = $query->select(
+            'p.id_pemesanan',
+            'p.tanggal_pemesanan',
+            'u.name as customer',
+            'd.nama as destinasi',
+            'p.jumlah_tiket',
+            'pay.metode_bayar',
+            'pay.total_bayar',
+            'pay.status_pembayaran as status'
+        )
+            ->orderBy('p.tanggal_pemesanan', 'desc')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('transaksi.cetak', compact('pemesanan'));
+
+        return $pdf->download('laporan-transaksi.pdf');
+    }
 }

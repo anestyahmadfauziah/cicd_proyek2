@@ -3,216 +3,280 @@
 @section('content')
 <div class="container-fluid">
 
-<h2 class="fw-bold mb-1">Laporan Transaksi Wisata</h2>
+    <h2 class="fw-bold mb-1">Laporan Transaksi Wisata</h2>
 
-{{-- ================= SUMMARY CARD ================= --}}
+    {{-- ================= SUMMARY CARD ================= --}}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3 rounded-4">
+                <small>Total Revenue</small>
+                <h3 class="text-primary fw-bold">
+                    Rp {{ number_format($summary['revenue'], 0, ',', '.') }}
+                </h3>
+            </div>
+        </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 rounded-4">
-            <small>Total Revenue</small>
-            <h3 class="text-primary fw-bold">
-                Rp {{ number_format($summary['revenue'],0,',','.') }}
-            </h3>
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3 rounded-4">
+                <small>Total Pengunjung</small>
+                <h3 class="text-success fw-bold">
+                    {{ $summary['pengunjung'] }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3 rounded-4">
+                <small>Total Transaksi</small>
+                <h3 class="fw-bold text-purple">
+                    {{ $summary['transaksi'] }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3 rounded-4">
+                <small>Pending</small>
+                <h3 class="fw-bold text-danger">
+                    {{ $summary['pending'] }}
+                </h3>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 rounded-4">
-            <small>Total Pengunjung</small>
-            <h3 class="text-success fw-bold">
-                {{ $summary['pengunjung'] }}
-            </h3>
+    {{-- ================= GRAFIK ================= --}}
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 border-0 rounded-4 h-100">
+                <h5 class="fw-bold mb-3">Tren Revenue & Pengunjung Harian</h5>
+                <div id="revenueChart"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 rounded-4">
-            <small>Total Transaksi</small>
-            <h3 class="fw-bold text-purple">
-                {{ $summary['transaksi'] }}
-            </h3>
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 border-0 rounded-4 h-100">
+                <h5 class="fw-bold mb-3">Metode Pembayaran</h5>
+                <div id="paymentChart"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 rounded-4">
-            <small>Pending</small>
-            <h3 class="fw-bold text-danger">
-                {{ $summary['pending'] }}
-            </h3>
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 border-0 rounded-4 h-100">
+                <h5 class="fw-bold mb-3">Jenis Kelamin Pembeli</h5>
+
+                {{-- Info angka real di atas chart --}}
+                <div class="d-flex justify-content-around mb-2">
+                    <div class="text-center">
+                        <div class="fw-bold text-primary fs-5">{{ $lakiLaki }}</div>
+                        <small class="text-muted">Laki-laki</small>
+                    </div>
+                    <div class="text-center">
+                        <div class="fw-bold fs-5" style="color:#D4537E;">{{ $perempuan }}</div>
+                        <small class="text-muted">Perempuan</small>
+                    </div>
+                </div>
+
+                @if($totalGender === 0)
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-people fs-2 d-block mb-2"></i>
+                        Belum ada data jenis kelamin pembeli
+                    </div>
+                @else
+                    <div id="genderChart"></div>
+                @endif
+            </div>
         </div>
+
     </div>
-</div>
 
-{{-- ================= GRAFIK ================= --}}
-<div class="row g-4 mb-4">
+    {{-- ================= TABEL ================= --}}
+    <div class="card shadow-sm p-4 border-0 rounded-4">
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4 border-0 rounded-4 h-100"> {{-- ✅ tambah h-100 --}}
-            <h5 class="fw-bold mb-3">Tren Revenue & Pengunjung Harian</h5>
-            <div id="revenueChart"></div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Daftar Transaksi</h5>
+
+            @if(auth()->guard('web')->check())
+            <button onclick="downloadPDF()"
+                class="btn text-white fw-semibold px-4 py-2 rounded-4 shadow-sm"
+                style="background:#2563eb;">
+                <i class="bi bi-printer me-2"></i> Cetak Data
+            </button>
+            @endif
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4 border-0 rounded-4 h-100"> {{-- ✅ tambah h-100 --}}
-            <h5 class="fw-bold mb-3">Metode Pembayaran</h5>
-            <div id="paymentChart"></div>
-        </div>
-    </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Kode</th>
+                        <th>Tanggal</th>
+                        <th>Customer</th>
+                        <th>Lokasi</th>
+                        <th>Tiket</th>
+                        <th>Jumlah</th>
+                        <th>Pembayaran</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4 border-0 rounded-4 h-100"> {{-- ✅ tambah h-100 --}}
-            <h5 class="fw-bold mb-3">Jenis Kelamin Pembeli</h5>
-            <div id="genderChart"></div>
-        </div>
-    </div>
-
-</div>
-
-</div>
-
-{{-- ================= TABEL ================= --}}
-<div class="card shadow-sm p-4 border-0 rounded-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">Daftar Transaksi</h5>
-
-        @if(auth()->guard('web')->check())
-        <button onclick="downloadPDF()"
-            class="btn text-white fw-semibold px-4 py-2 rounded-4 shadow-sm"
-            style="background:#2563eb;">
-            <i class="bi bi-printer me-2"></i> Cetak Data
-        </button>
-        @endif
-    </div>
-
-    <div class="table-responsive">
-        <table class="table align-middle">
-            <thead class="table-light">
+                <tbody>
+                @forelse($transactions as $t)
                 <tr>
-                    <th>Kode</th>
-                    <th>Tanggal</th>
-                    <th>Customer</th>
-                    <th>Lokasi</th>
-                    <th>Tiket</th>
-                    <th>Jumlah</th>
-                    <th>Pembayaran</th>
-                    <th>Total</th>
-                    <th>Status</th>
+                    <td>{{ $t->kode }}</td>
+                    <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
+                    <td>{{ $t->customer ?? '-' }}</td>
+                    <td>{{ $t->lokasi ?? '-' }}</td>
+                    <td>{{ $t->tiket }}</td>
+                    <td>{{ $t->jumlah }}</td>
+                    <td>{{ $t->pembayaran ?? '-' }}</td>
+                    <td>Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                    <td>
+                        @php
+                            $statusClass = match(strtolower($t->status ?? '')) {
+                                'success', 'settlement', 'capture', 'paid' => 'bg-success',
+                                'pending' => 'bg-warning text-dark',
+                                'expire', 'cancel', 'deny', 'failed' => 'bg-danger',
+                                default => 'bg-secondary',
+                            };
+                            $statusLabel = match(strtolower($t->status ?? '')) {
+                                'success', 'settlement', 'capture' => 'Success', 
+                                'pending' => 'Pending',
+                                'expire', 'cancel', 'deny', 'failed' => 'Failed',
+                                default => ucfirst($t->status ?? '-'),
+                            };
+                        @endphp
+                        <span class="badge {{ $statusClass }} rounded-pill px-3">{{ $statusLabel }}</span>
+                    </td>
                 </tr>
-            </thead>
+                @empty
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">
+                        Belum ada data transaksi
+                    </td>
+                </tr>
+                @endforelse
+                </tbody>
 
-            <tbody>
-            @forelse($transactions as $t)
-            <tr>
-                <td>{{ $t->kode }}</td>
-                <td>{{ $t->tanggal }}</td>
-                <td>{{ $t->customer }}</td>
-                <td>{{ $t->lokasi }}</td>
-                <td>{{ $t->tiket }}</td>
-                <td>{{ $t->jumlah }}</td>
-                <td>{{ $t->pembayaran }}</td>
-                <td>Rp {{ number_format($t->total,0,',','.') }}</td>
-                <td>{{ $t->status }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="9" class="text-center text-muted py-4">
-                    Belum ada data transaksi
-                </td>
-            </tr>
-            @endforelse
-            </tbody>
+            </table>
+        </div>
 
-        </table>
     </div>
-
-</div>
 
 </div>
 
 {{-- ================= SCRIPT GRAFIK ================= --}}
-
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const trend = @json($trend);
-    const metode = @json($metodePembayaran);
+    // ===== DATA DARI CONTROLLER =====
+    const trend           = @json($trend);
+    const metode          = @json($metodePembayaran);
+    const lakiPersen      = {{ $lakiPersen }};
+    const perempuanPersen = {{ $perempuanPersen }};
+    const totalGender     = {{ $totalGender }};
+    const lakiLaki        = {{ $lakiLaki }};
+    const perempuan       = {{ $perempuan }};
 
-    const labels = trend.map(t => t.tanggal);
-    const revenue = trend.map(t => t.revenue);
+    // ===== TREN REVENUE & PENGUNJUNG =====
+    const labels   = trend.map(t => t.tanggal);
+    const revenue  = trend.map(t => t.revenue);
     const visitors = trend.map(t => t.pengunjung);
 
     new ApexCharts(document.querySelector("#revenueChart"), {
         chart: { type: 'line', height: 300 },
         stroke: { curve: 'smooth' },
         series: [
-            { name: 'Revenue', data: revenue },
-            { name: 'Visitors', data: visitors }
+            { name: 'Revenue',   data: revenue  },
+            { name: 'Visitors',  data: visitors }
         ],
-        xaxis: { categories: labels }
+        xaxis: { categories: labels },
+        tooltip: {
+            y: [{
+                formatter: val => 'Rp ' + val.toLocaleString('id-ID')
+            }, {
+                formatter: val => val + ' orang'
+            }]
+        }
     }).render();
 
+    // ===== METODE PEMBAYARAN =====
     new ApexCharts(document.querySelector("#paymentChart"), {
         chart: { type: 'pie', height: 300 },
         labels: metode.map(m => m.metode),
         series: metode.map(m => m.total)
     }).render();
 
+    // ===== JENIS KELAMIN (DATA REAL DARI DATABASE) =====
+    @if($totalGender > 0)
     new ApexCharts(document.querySelector("#genderChart"), {
         chart: { type: 'radialBar', height: 300 },
-        series: [57.7, 42.3],
+        series: [lakiPersen, perempuanPersen],
         labels: ['Laki-laki', 'Perempuan'],
         colors: ['#378ADD', '#D4537E'],
         plotOptions: {
             radialBar: {
                 dataLabels: {
-                    name: { fontSize: '13px' },
+                    name:  { fontSize: '13px' },
                     value: { fontSize: '14px' },
                     total: {
                         show: true,
                         label: 'Total',
-                        formatter: () => '248 orang'
+                        formatter: () => totalGender + ' orang'
                     }
                 }
             }
         },
         legend: {
             show: true,
-            position: 'bottom'
+            position: 'bottom',
+            formatter: function(seriesName, opts) {
+                const jumlah = seriesName === 'Laki-laki' ? lakiLaki : perempuan;
+                return seriesName + ': ' + jumlah + ' orang';
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: val => val + '%'
+            }
         }
     }).render();
+    @endif
 
 });
 
-// ================= DOWNLOAD PDF TANPA RELOAD / TAB =================
+// ================= DOWNLOAD PDF =================
 function downloadPDF() {
     fetch("{{ route('admin.transaksi.cetak') }}")
     .then(response => {
-        if (!response.ok) {
-            throw new Error("Gagal download");
+        // ← Cek content type dulu
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+            // Artinya server return error page, bukan PDF
+            return response.text().then(html => {
+                console.error("Server error:", html);
+                throw new Error("Server return HTML, bukan PDF");
+            });
         }
+        if (!response.ok) throw new Error("Gagal download");
         return response.blob();
     })
     .then(blob => {
         const url = window.URL.createObjectURL(blob);
-
         const a = document.createElement("a");
         a.href = url;
         a.download = "laporan-transaksi.pdf";
         document.body.appendChild(a);
         a.click();
-
         a.remove();
         window.URL.revokeObjectURL(url);
     })
     .catch(err => {
         console.error(err);
-        alert("Download gagal");
+        alert("Download gagal: " + err.message);
     });
 }
 </script>

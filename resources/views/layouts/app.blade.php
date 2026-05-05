@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <!-- Google Fonts -->
-   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* ===== ROOT & BASE ===== */
@@ -60,7 +60,6 @@
             overflow-x: hidden;
         }
 
-        /* Decorative circles mimicking login page bg */
         .sidebar::before,
         .sidebar::after {
             content: '';
@@ -79,7 +78,6 @@
             bottom: 80px; left: -50px;
         }
 
-        /* Logo */
         .sidebar-logo {
             text-align: center;
             padding: 8px 0 20px;
@@ -92,7 +90,6 @@
             opacity: 0.95;
         }
 
-        /* Label section */
         .sidebar-label {
             font-size: 10px;
             font-weight: 700;
@@ -103,7 +100,6 @@
             margin-bottom: 4px;
         }
 
-        /* Nav links */
         .sidebar-menu { flex: 1; }
 
         .sidebar a {
@@ -148,14 +144,12 @@
             border-radius: 0 4px 4px 0;
         }
 
-        /* Divider */
         .sidebar-divider {
             border: none;
             border-top: 1px solid rgba(255,255,255,0.1);
             margin: 12px 4px;
         }
 
-        /* Bottom */
         .sidebar-bottom { margin-top: auto; }
 
         .btn-logout {
@@ -180,7 +174,6 @@
         }
         .btn-logout i { font-size: 17px; width: 20px; text-align: center; }
 
-        /* User chip at bottom */
         .sidebar-user {
             display: flex;
             align-items: center;
@@ -237,9 +230,7 @@
             align-items: center;
             gap: 10px;
         }
-        .topbar-search {
-            position: relative;
-        }
+        .topbar-search { position: relative; }
         .topbar-search input {
             border: 1.5px solid var(--border);
             border-radius: 10px;
@@ -324,7 +315,6 @@
             font-weight: 600;
         }
 
-        /* Icon color variants */
         .icon-blue   { background: #e8f3fd; color: #1a6bbf; }
         .icon-teal   { background: #e6f9f5; color: #0d9488; }
         .icon-orange { background: #fff3e8; color: #ea8c3b; }
@@ -464,6 +454,188 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #c5d8ef; border-radius: 6px; }
         ::-webkit-scrollbar-thumb:hover { background: #9bbcd9; }
+
+        /* ===== KELOLA USER ===== */
+        .stat-simple {
+            background: #f0f6ff;
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+        .stat-simple .stat-simple-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .stat-simple .stat-simple-value {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .user-table-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+        .user-table-card table { font-size: 13px; }
+        .user-table-card thead th {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--bg-page);
+            padding: 10px 16px;
+        }
+        .user-table-card tbody td {
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+        .user-table-card tbody tr:hover td { background: #f8fbff; }
+
+        .avatar-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e8f3fd;
+            color: #0C447C;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .badge-role-admin {
+            background: #EAF3DE;
+            color: #3B6D11;
+            border: 0.5px solid #C0DD97;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-role-user {
+            background: #E6F1FB;
+            color: #0C447C;
+            border: 0.5px solid #85B7EB;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-status-active {
+            background: #EAF3DE;
+            color: #3B6D11;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-status-inactive {
+            background: #f1f1f1;
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-tambah-user {
+            background: #E6F1FB;
+            color: #0C447C;
+            border: 0.5px solid #85B7EB;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-tambah-user:hover {
+            background: #d0e8f8;
+            color: #0C447C;
+        }
+
+        .btn-hapus {
+            background: none;
+            border: none;
+            color: #adb5bd;
+            border-radius: 6px;
+            padding: 4px 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: color 0.15s, background 0.15s;
+        }
+        .btn-hapus:hover {
+            color: #A32D2D;
+            background: #FCEBEB;
+        }
+
+        /* ===== FORM TAMBAH USER ===== */
+        .form-user-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            box-shadow: var(--shadow-card);
+            padding: 1.5rem;
+        }
+        .form-section-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .badge-role-fixed {
+            background: #EAF3DE;
+            color: #3B6D11;
+            border: 0.5px solid #C0DD97;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-role-fixed .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #639922;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -530,28 +702,29 @@
     <div class="sidebar-bottom">
         <hr class="sidebar-divider">
 
-       {{-- User chip --}}
-@php
-    $sidebarUser = auth()->guard('superadmin')->check()
-        ? auth()->guard('superadmin')->user()
-        : auth()->guard('web')->user();
-    
-    $displayName = trim(($sidebarUser->first_name ?? '') . ' ' . ($sidebarUser->last_name ?? ''));
-    if (!$displayName) $displayName = $sidebarUser->name ?? 'User';
-@endphp
+        {{-- User chip --}}
+        @php
+            $sidebarUser = auth()->guard('superadmin')->check()
+                ? auth()->guard('superadmin')->user()
+                : auth()->guard('web')->user();
 
-@if($sidebarUser)
-<div class="sidebar-user">
-    <div class="avatar">{{ strtoupper(substr($displayName, 0, 1)) }}</div>
-    <div class="user-info">
-        <div class="user-name">{{ $displayName }}</div>
-        <div class="user-role">
-            @if(auth()->guard('superadmin')->check()) Super Admin
-            @else Admin @endif
+            $displayName = trim(($sidebarUser->first_name ?? '') . ' ' . ($sidebarUser->last_name ?? ''));
+            if (!$displayName) $displayName = $sidebarUser->name ?? 'User';
+        @endphp
+
+        @if($sidebarUser)
+        <div class="sidebar-user">
+            <div class="avatar">{{ strtoupper(substr($displayName, 0, 1)) }}</div>
+            <div class="user-info">
+                <div class="user-name">{{ $displayName }}</div>
+                <div class="user-role">
+                    @if(auth()->guard('superadmin')->check()) Super Admin
+                    @else Admin @endif
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-@endif
+        @endif
+
         {{-- Pengaturan --}}
         @if(auth()->guard('superadmin')->check())
         <a href="{{ route('superadmin.pengaturan') }}">
@@ -580,6 +753,22 @@
 <div class="content">
     @yield('content')
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function togglePassword(fieldId, iconId) {
+    const field = document.getElementById(fieldId);
+    const icon  = document.getElementById(iconId);
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
 
 </body>
 </html>

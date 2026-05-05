@@ -15,7 +15,6 @@ class Pemesanan extends Model
         'jumlah_tiket',
         'total_harga',
         'status',
-        'id_user',
         'id_destinasi',
         'user_uuid',
         'order_id',
@@ -41,9 +40,9 @@ class Pemesanan extends Model
     }
 
     public function user()
-    {
-          return $this->belongsTo(User::class, 'user_uuid', 'id');
-    }
+{
+    return $this->belongsTo(User::class, 'user_uuid', 'id');
+}
 
     public function getStatusFinalAttribute()
 {

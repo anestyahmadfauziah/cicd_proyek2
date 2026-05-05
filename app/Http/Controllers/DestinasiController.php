@@ -22,13 +22,14 @@ class DestinasiController extends Controller
         $keyword = $request->keyword;
 
         if(auth()->guard('superadmin')->check()){
-            $id = auth()->guard('superadmin')->user()->id_superadmin;
+            $id = auth()->guard('superadmin')->user()->id;
             $role = 'superadmin';
         }else{
-            $id = auth()->guard('web')->user()->id_admin;
+            $id = auth()->guard('web')->user()->id;
             $role = 'admin';
         }
 
+        
         $destinasi = Destinasi::with(['kategori','fotos'])
             ->where('created_by_id', $id)
             ->where('created_by_role', $role)

@@ -20,8 +20,6 @@ Route::get('/', fn() => redirect()->route('login'));
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// ⚠️ tetap biarin sesuai struktur kamu
 Route::get('/logout', function () {
     return redirect()->route('login');
 });
@@ -32,21 +30,16 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.change.proses');
 });
 
-
 // ================= DASHBOARD REDIRECT =================
-// 🔥 FIX: HAPUS middleware auth:superadmin,web
 Route::get('/dashboard', function () {
     if (auth()->guard('superadmin')->check()) {
         return redirect()->route('superadmin.dashboard');
     }
-
     if (auth()->guard('web')->check()) {
         return redirect()->route('admin.dashboard');
     }
-
     return redirect()->route('login');
 })->name('dashboard');
-
 
 // ================= SUPERADMIN =================
 Route::middleware(['auth:superadmin'])
@@ -62,17 +55,14 @@ Route::middleware(['auth:superadmin'])
         Route::post('/update-password', [DashboardController::class, 'updatePassword'])->name('updatePassword');
         Route::post('/update-akses', [DashboardController::class, 'updateAkses'])->name('updateAkses');
 
-        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('users', UserController::class)->except(['show']); // ✅ Hanya satu ini
         Route::resource('rekomendasi', RekomendasiController::class);
         Route::resource('destinasi', DestinasiController::class);
 
-        Route::get('/rekap-transaksi', [TransaksiController::class, 'rekap'])
-            ->name('rekap.transaksi');
+        Route::get('/rekap-transaksi', [TransaksiController::class, 'rekap'])->name('rekap.transaksi');
+        Route::get('/rekap-transaksi/pdf', [TransaksiController::class, 'rekapPDF'])->name('rekap.transaksi.pdf');
 
-        Route::get('/rekap-transaksi/pdf', [TransaksiController::class, 'rekapPDF'])
-            ->name('rekap.transaksi.pdf');
-    });
-
+    }); // ✅ Tutup superadmin group
 
 // ================= ADMIN =================
 Route::middleware(['auth:web'])
@@ -90,6 +80,6 @@ Route::middleware(['auth:web'])
 
         Route::resource('destinasi', DestinasiController::class);
 
-        Route::get('/transaksi/cetak', [TransaksiController::class, 'cetakIndex'])
-            ->name('transaksi.cetak');
-    });
+        Route::get('/transaksi/cetak', [TransaksiController::class, 'cetakIndex'])->name('transaksi.cetak');
+
+    }); // ✅ Tutup admin group

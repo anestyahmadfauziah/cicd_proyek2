@@ -39,22 +39,29 @@
             <div class="ms-4 flex-grow-1">
                 <h5 class="mb-1">{{ $r->destinasi->nama }}</h5>
                 <small class="text-muted d-block">📍 {{ $r->destinasi->lokasi }}</small>
-                <small class="text-warning">⭐ 4.8 (1234 ulasan)</small>
                 <p class="mt-2 mb-0 text-muted">{{ $r->alasan }}</p>
             </div>
 
             {{-- ACTION --}}
-            @if($prefix === 'superadmin')
-            <div class="d-flex gap-2">
-                <a href="{{ route('superadmin.rekomendasi.edit', $r->id) }}" class="btn btn-sm btn-warning">Edit</a>
+        @if($prefix === 'superadmin')
+        <div class="d-flex gap-2">
+            <a href="{{ route('superadmin.rekomendasi.edit', $r->id) }}"
+            class="d-inline-flex align-items-center justify-content-center"
+            style="width:36px;height:36px;border-radius:8px;border:1px solid #378ADD;color:#378ADD;background:#fff;text-decoration:none;">
+                <i class="bi bi-pencil" style="font-size:15px;"></i>
+        </a>
 
-                <form action="{{ route('superadmin.rekomendasi.destroy', $r->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-sm btn-danger">Hapus</button>
-                </form>
-            </div>
-            @endif
+            <form action="{{ route('superadmin.rekomendasi.destroy', $r->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        onclick="return confirm('Hapus rekomendasi ini?')"
+                        style="width:36px;height:36px;border-radius:8px;border:1px solid #E24B4A;color:#E24B4A;background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-trash" style="font-size:15px;"></i>
+                </button>
+            </form>
+        </div>
+        @endif
 
         </div>
     </div>
