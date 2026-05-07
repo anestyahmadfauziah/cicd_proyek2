@@ -16,6 +16,7 @@ class Pemesanan extends Model
         'total_harga',
         'status',
         'id_destinasi',
+        'user_id',
         'user_uuid',
         'order_id',
         'tanggal_berangkat',

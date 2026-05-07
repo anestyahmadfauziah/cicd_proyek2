@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // ✅ WAJIB untuk Midtrans
         $middleware->validateCsrfTokens(except: [
-            'midtrans/callback',
+            'api/midtrans/callback',
         ]);
 
     })
