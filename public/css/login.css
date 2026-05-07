@@ -8,7 +8,7 @@ body {
     justify-content: center;
     font-family: 'Inter', sans-serif;
     background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-                url('/images/BG.jpeg') no-repeat center center;
+                url('https://wiskuy.my.id/images/BG.jpeg') no-repeat center center;
     background-size: cover;
     color: white;
     overflow: hidden;
