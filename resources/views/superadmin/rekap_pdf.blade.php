@@ -73,7 +73,18 @@
 
 <td>Rp {{ number_format($r->pembayaran?->total_bayar ?? 0) }}</td>
 
-<td>{{ ucfirst($r->midtrans_status ?? $r->status) }}</td>
+@php
+    $rawStatus = $r->midtrans_status ?? $r->status;
+
+    $statusLabel = match($rawStatus) {
+        'paid', 'success', 'settlement' => 'Success',
+        'pending' => 'Pending',
+        'failed', 'expire', 'cancel' => 'Failed',
+        default => ucfirst($rawStatus),
+    };
+@endphp
+
+<td>{{ $statusLabel }}</td>
 
 </tr>
 @endforeach

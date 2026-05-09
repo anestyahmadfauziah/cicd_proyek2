@@ -305,8 +305,9 @@ $perempuanPersen = $totalGender > 0 ? round(($perempuan / $totalGender) * 100, 1
     // ================= SUPERADMIN SETTINGS =================
     public function superadminPengaturan()
     {
-        $user = auth('superadmin')->user();
-        return view('superadmin.settings', compact('user'));
+    $user = auth('superadmin')->user();
+    $kategoris = \App\Models\Kategori::orderBy('nama_kategori')->get();
+    return view('superadmin.settings', compact('user', 'kategoris'));
     }
 
     // ================= CETAK TRANSAKSI PDF =================

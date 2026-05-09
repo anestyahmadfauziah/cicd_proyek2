@@ -28,7 +28,7 @@ class RekomendasiController extends Controller
         // Tentukan prefix route untuk blade
         $prefix = request()->is('superadmin/*') ? 'superadmin' : 'admin';
 
-        return view('rekomendasi.index', compact('rekomendasi', 'prefix'));
+        return view('rekomendasi', compact('rekomendasi', 'prefix'));
     }
 
     /**

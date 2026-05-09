@@ -176,29 +176,32 @@ class TransaksiController extends Controller
     }
 
     // ================= CETAK TRANSAKSI (PDF DETAIL) =================
-    public function cetakIndex()
-    {
-        $query = Pemesanan::with(['pembayaran','destinasi','user']);
+   public function cetakIndex()
+{
+    $query = Pemesanan::with(['pembayaran','destinasi','user']);
 
-        if (auth()->guard('web')->check()) {
-            $adminId = auth()->guard('web')->id();
-
-
-            $destinasiIds = \App\Models\Destinasi::where('created_by_id', $adminId)
-                ->where('created_by_role', 'admin')
-                ->pluck('id_destinasi');
-
-            $query->whereIn('id_destinasi', $destinasiIds);
-        }
-
-        $pemesanan = $query->latest()->get();
-
-        $pdf = Pdf::loadView('transaksi.cetak', compact('pemesanan'))
-            ->setPaper('A4', 'landscape');
-
-        return response()->streamDownload(
-            fn () => print($pdf->output()),
-            "laporan-transaksi.pdf"
-        );
+    if (auth()->guard('web')->check()) {
+        $admin   = auth()->guard('web')->user();
+        $adminId = $admin->id_admin ?? $admin->id; 
+        $destinasiIds = \App\Models\Destinasi::where('created_by_id', $adminId)
+            ->where('created_by_role', 'admin')
+            ->pluck('id_destinasi');
+        $query->whereIn('id_destinasi', $destinasiIds);
     }
+
+    $pemesanan = $query->latest()->get();
+
+    // ✅ Hitung di controller, bukan di view
+    $totalPendapatan = $pemesanan->sum(function($t) {
+        return $t->pembayaran?->total_bayar ?? 0;
+    });
+
+    $pdf = Pdf::loadView('transaksi.cetak', compact('pemesanan', 'totalPendapatan'))
+        ->setPaper('A4', 'landscape');
+
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        "laporan-transaksi.pdf"
+    );
 }
+    }

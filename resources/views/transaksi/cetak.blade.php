@@ -8,49 +8,34 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
         }
-
         h2 {
             text-align: center;
             margin-bottom: 4px;
         }
-
         .subtitle {
             text-align: center;
             margin-bottom: 20px;
             color: #555;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
         table th, table td {
             border: 1px solid #000;
             padding: 6px 8px;
             text-align: left;
         }
-
         table th {
             background: #f2f2f2;
             font-weight: bold;
         }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .summary {
-            margin-bottom: 15px;
-        }
-
-        .badge-berhasil { color: green; font-weight: bold; }
+        .text-right  { text-align: right; }
+        .text-center { text-align: center; }
+        .summary     { margin-bottom: 15px; }
+        .badge-berhasil { color: green;  font-weight: bold; }
         .badge-menunggu { color: orange; font-weight: bold; }
-        .badge-gagal    { color: red; font-weight: bold; }
+        .badge-gagal    { color: red;    font-weight: bold; }
     </style>
 </head>
 <body>
@@ -60,9 +45,7 @@
 
 <div class="summary">
     <p><b>Total Transaksi:</b> {{ count($pemesanan) }}</p>
-    <p><b>Total Pendapatan:</b> 
-        Rp {{ number_format($pemesanan->sum(fn($t) => $t->pembayaran?->total_bayar ?? 0), 0, ',', '.') }}
-    </p>
+    <p><b>Total Pendapatan:</b> Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
 </div>
 
 <table>

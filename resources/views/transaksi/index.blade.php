@@ -91,77 +91,76 @@
     </div>
 
     {{-- ================= TABEL ================= --}}
-    <div class="card shadow-sm p-4 border-0 rounded-4">
+<div class="card shadow-sm p-4 border-0 rounded-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Daftar Transaksi</h5>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">Daftar Transaksi</h6>
 
-            @if(auth()->guard('web')->check())
-            <button onclick="downloadPDF()"
-                class="btn text-white fw-semibold px-4 py-2 rounded-4 shadow-sm"
-                style="background:#2563eb;">
-                <i class="bi bi-printer me-2"></i> Cetak Data
-            </button>
-            @endif
-        </div>
+        @if(auth()->guard('web')->check())
+        <a href="{{ route('admin.transaksi.cetak') }}"
+        target="_blank"
+        class="btn text-white fw-semibold px-3 py-1 rounded-4 shadow-sm"
+        style="background:#2563eb; font-size: 0.85rem;">
+            <i class="bi bi-printer me-2"></i> Cetak Data
+        </a>
+        @endif
+    </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Kode</th>
-                        <th>Tanggal</th>
-                        <th>Customer</th>
-                        <th>Lokasi</th>
-                        <th>Tiket</th>
-                        <th>Jumlah</th>
-                        <th>Pembayaran</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                @forelse($transactions as $t)
+    <div class="table-responsive">
+        <table class="table align-middle" style="font-size: 0.82rem;">
+            <thead class="table-light">
                 <tr>
-                    <td>{{ $t->kode }}</td>
-                    <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
-                    <td>{{ $t->customer ?? '-' }}</td>
-                    <td>{{ $t->lokasi ?? '-' }}</td>
-                    <td>{{ $t->tiket }}</td>
-                    <td>{{ $t->jumlah }}</td>
-                    <td>{{ $t->pembayaran ?? '-' }}</td>
-                    <td>Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-                    <td>
-                        @php
-                            $statusClass = match(strtolower($t->status ?? '')) {
-                                'success', 'settlement', 'capture', 'paid' => 'bg-success',
-                                'pending' => 'bg-warning text-dark',
-                                'expire', 'cancel', 'deny', 'failed' => 'bg-danger',
-                                default => 'bg-secondary',
-                            };
-                            $statusLabel = match(strtolower($t->status ?? '')) {
-                                'success', 'settlement', 'capture' => 'Success', 
-                                'pending' => 'Pending',
-                                'expire', 'cancel', 'deny', 'failed' => 'Failed',
-                                default => ucfirst($t->status ?? '-'),
-                            };
-                        @endphp
-                        <span class="badge {{ $statusClass }} rounded-pill px-3">{{ $statusLabel }}</span>
-                    </td>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Kode</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Tanggal</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Customer</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Lokasi</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Tiket</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Jumlah</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Pembayaran</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Total</th>
+                    <th style="font-size: 0.75rem; letter-spacing: 0.03em;">Status</th>
                 </tr>
-                @empty
-                <tr>
-                    <td colspan="9" class="text-center text-muted py-4">
-                        Belum ada data transaksi
-                    </td>
-                </tr>
-                @endforelse
-                </tbody>
+            </thead>
 
-            </table>
-        </div>
+            <tbody>
+            @forelse($transactions as $t)
+            <tr>
+                <td>{{ $t->kode }}</td>
+                <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
+                <td>{{ $t->customer ?? '-' }}</td>
+                <td>{{ $t->lokasi ?? '-' }}</td>
+                <td>{{ $t->tiket }}</td>
+                <td>{{ $t->jumlah }}</td>
+                <td>{{ $t->pembayaran ?? '-' }}</td>
+                <td>Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                <td>
+                    @php
+                        $statusClass = match(strtolower($t->status ?? '')) {
+                            'success', 'settlement', 'capture', 'paid' => 'bg-success',
+                            'pending' => 'bg-warning text-dark',
+                            'expire', 'cancel', 'deny', 'failed' => 'bg-danger',
+                            default => 'bg-secondary',
+                        };
+                        $statusLabel = match(strtolower($t->status ?? '')) {
+                            'success', 'settlement', 'capture' => 'Success', 
+                            'pending' => 'Pending',
+                            'expire', 'cancel', 'deny', 'failed' => 'Failed',
+                            default => ucfirst($t->status ?? '-'),
+                        };
+                    @endphp
+                    <span class="badge {{ $statusClass }} rounded-pill px-2" style="font-size: 0.72rem;">{{ $statusLabel }}</span>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="9" class="text-center text-muted py-4">
+                    Belum ada data transaksi
+                </td>
+            </tr>
+            @endforelse
+            </tbody>
 
+        </table>
     </div>
 
 </div>
@@ -205,9 +204,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ===== METODE PEMBAYARAN =====
     new ApexCharts(document.querySelector("#paymentChart"), {
-        chart: { type: 'pie', height: 300 },
+        chart: { type: 'pie', height: 300, width: '100%' },
         labels: metode.map(m => m.metode),
-        series: metode.map(m => m.total)
+        series: metode.map(m => m.total),
+        legend: {
+            position: 'bottom'
+        }
     }).render();
 
     // ===== JENIS KELAMIN (DATA REAL DARI DATABASE) =====

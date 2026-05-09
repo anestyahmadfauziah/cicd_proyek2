@@ -8,6 +8,7 @@ use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\KategoriController;
 
 // ================= PAYMENT =================
 Route::post('/midtrans/callback', [PaymentController::class, 'callback']);
@@ -59,6 +60,10 @@ Route::middleware(['auth:superadmin'])
         Route::resource('rekomendasi', RekomendasiController::class);
         Route::resource('destinasi', DestinasiController::class);
 
+        Route::post('/kategori', [KategoriController::class, 'store'])->name('kategori.store');
+        Route::put('/kategori/{id}', [KategoriController::class, 'update'])->name('kategori.update');
+        Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
+
         Route::get('/rekap-transaksi', [TransaksiController::class, 'rekap'])->name('rekap.transaksi');
         Route::get('/rekap-transaksi/pdf', [TransaksiController::class, 'rekapPDF'])->name('rekap.transaksi.pdf');
 
@@ -76,10 +81,9 @@ Route::middleware(['auth:web'])
         Route::post('/pengaturan/update', [DashboardController::class, 'updateProfile'])->name('updateProfile');
         Route::post('/pengaturan/password', [DashboardController::class, 'updatePassword'])->name('updatePassword');
 
-        Route::get('/transaksi', [DashboardController::class, 'transaksi'])->name('transaksi.index');
-
         Route::resource('destinasi', DestinasiController::class);
 
         Route::get('/transaksi/cetak', [TransaksiController::class, 'cetakIndex'])->name('transaksi.cetak');
+        Route::get('/transaksi', [DashboardController::class, 'transaksi'])->name('transaksi.index');
 
     }); // ✅ Tutup admin group

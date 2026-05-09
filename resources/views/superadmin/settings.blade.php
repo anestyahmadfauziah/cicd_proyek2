@@ -22,6 +22,7 @@
         <button class="btn btn-light tab-btn" data-tab="keamanan">Keamanan</button>
         <button class="btn btn-light tab-btn" data-tab="akses">Hak Akses</button>
         <button class="btn btn-light tab-btn" data-tab="rekap">Rekap Transaksi</button>
+        <button class="btn btn-light tab-btn" data-tab="kategori">Kategori</button>
     </div>
 
     {{-- ================= PROFIL ================= --}}
@@ -239,6 +240,119 @@
         </div>
     </div>
 
+</div>
+
+    {{-- ================= KATEGORI ================= --}}
+<div id="kategori" class="tab-content d-none">
+    <div class="card p-4 shadow-sm border-0 rounded-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Kelola Kategori</h6>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahKategori"
+                    style="font-size: 0.82rem; border-radius: 8px;">
+                <i class="bi bi-plus-lg"></i> Tambah Kategori
+            </button>
+        </div>
+
+        @if(session('success_kategori'))
+            <div class="alert alert-success py-2" style="font-size: 0.85rem;">{{ session('success_kategori') }}</div>
+        @endif
+
+        <table class="table align-middle" style="font-size: 0.85rem;">
+            <thead>
+                <tr style="background: #fafafa;">
+                    <th style="font-size: 0.75rem;">No</th>
+                    <th style="font-size: 0.75rem;">Nama Kategori</th>
+                    <th style="font-size: 0.75rem;" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($kategoris ?? [] as $i => $kat)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $kat->nama_kategori }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+                            {{-- Edit --}}
+                            <button class="btn btn-sm"
+                                    style="border: 1.5px solid #2563eb; border-radius: 8px; padding: 4px 8px; background: transparent;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditKategori{{ $kat->id_kategori }}">
+                                <i class="bi bi-pencil" style="font-size: 0.8rem; color: #2563eb;"></i>
+                            </button>
+                            {{-- Hapus --}}
+                            <form action="{{ route('superadmin.kategori.destroy', $kat->id_kategori) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm"
+                                        style="border: 1.5px solid #DD2A2A; border-radius: 8px; padding: 4px 8px; background: transparent;"
+                                        onclick="return confirm('Hapus kategori ini?')">
+                                    <i class="bi bi-trash" style="font-size: 0.8rem; color: #DD2A2A;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                {{-- Modal Edit --}}
+                <div class="modal fade" id="modalEditKategori{{ $kat->id_kategori }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h6 class="modal-title fw-bold">Edit Kategori</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="{{ route('superadmin.kategori.update', $kat->id_kategori) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <label class="form-label" style="font-size: 0.85rem;">Nama Kategori</label>
+                                    <input type="text" name="nama_kategori" class="form-control"
+                                           style="font-size: 0.85rem;" value="{{ $kat->nama_kategori }}" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                @empty
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-3" style="font-size: 0.85rem;">
+                        Belum ada kategori
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- Modal Tambah Kategori --}}
+<div class="modal fade" id="modalTambahKategori" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold">Tambah Kategori</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('superadmin.kategori.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <label class="form-label" style="font-size: 0.85rem;">Nama Kategori</label>
+                    <input type="text" name="nama_kategori" class="form-control"
+                           style="font-size: 0.85rem;" placeholder="Contoh: Alam, Budaya..." required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 {{-- SCRIPT TAB --}}
