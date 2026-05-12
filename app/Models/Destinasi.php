@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\DestinasiFoto;
 
 class Destinasi extends Model
 {
@@ -40,13 +38,19 @@ class Destinasi extends Model
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
     }
 
-    // TAMBAHAN UNTUK MULTI FOTO (SLIDER)
     public function fotos()
     {
         return $this->hasMany(DestinasiFoto::class, 'id_destinasi', 'id_destinasi');
     }
+
     public function creator()
-{
-    return $this->belongsTo(User::class, 'created_by_id', 'id');
-}
+    {
+        return $this->belongsTo(User::class, 'created_by_id', 'id');
+    }
+
+    // ✅ Tambahkan relasi media di sini
+    public function media()
+    {
+        return $this->hasMany(DestinasiMedia::class, 'id_destinasi', 'id_destinasi');
+    }
 }

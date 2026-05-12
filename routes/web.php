@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\DestinasiMediaController;
 
 // ================= PAYMENT =================
 Route::post('/midtrans/callback', [PaymentController::class, 'callback']);
@@ -67,6 +68,12 @@ Route::middleware(['auth:superadmin'])
         Route::get('/rekap-transaksi', [TransaksiController::class, 'rekap'])->name('rekap.transaksi');
         Route::get('/rekap-transaksi/pdf', [TransaksiController::class, 'rekapPDF'])->name('rekap.transaksi.pdf');
 
+        Route::prefix('destinasi/{id}/media')->group(function () {
+        Route::get('/', [DestinasiMediaController::class, 'index']);
+        Route::post('/', [DestinasiMediaController::class, 'store']);
+    });
+        Route::delete('/media/{id}', [DestinasiMediaController::class, 'destroy']);
+
     }); // ✅ Tutup superadmin group
 
 // ================= ADMIN =================
@@ -85,5 +92,9 @@ Route::middleware(['auth:web'])
 
         Route::get('/transaksi/cetak', [TransaksiController::class, 'cetakIndex'])->name('transaksi.cetak');
         Route::get('/transaksi', [DashboardController::class, 'transaksi'])->name('transaksi.index');
+        Route::prefix('admin/destinasi/{id}/media')->middleware('auth:web')->group(function () {
+        Route::get('/', [DestinasiMediaController::class, 'index']);
+        Route::post('/', [DestinasiMediaController::class, 'store']);
+    });
 
     }); // ✅ Tutup admin group

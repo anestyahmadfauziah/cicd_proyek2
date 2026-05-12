@@ -3,164 +3,161 @@
 
 @section('content')
 
-<h4 class="fw-bold">
-    @if(Auth::guard('superadmin')->check())
-        Selamat Datang, {{ Auth::guard('superadmin')->user()->first_name ?? Auth::guard('superadmin')->user()->name ?? 'Superadmin' }}!
-    @else
-        Selamat Datang, {{ Auth::user()->first_name ?? 'Admin' }}!
-    @endif
-</h4>
-<p class="text-muted">Dashboard Sistem Informasi Destinasi Wisata CIAYUMAJAKUNING!</p>
-
 @php
-    // Helper inline untuk menentukan route berdasarkan guard
-    function routeByRole($type) {
-        if(Auth::guard('superadmin')->check()) {
-            return match($type) {
-                'destinasi' => route('superadmin.destinasi.index'),
-                'transaksi' => route('superadmin.transaksi'),
-                'users' => route('superadmin.users.index'),
-                default => '#',
-            };
-        } else {
-            return match($type) {
-                'destinasi' => route('admin.destinasi.index'),
-                'transaksi' => route('admin.transaksi.index'),
-                default => '#',
-            };
-        }
+function routeByRole($type) {
+    if(Auth::guard('superadmin')->check()) {
+        return match($type) {
+            'destinasi' => route('superadmin.destinasi.index'),
+            'transaksi' => route('superadmin.transaksi'),
+            'users'     => route('superadmin.users.index'),
+            default     => '#',
+        };
+    } else {
+        return match($type) {
+            'destinasi' => route('admin.destinasi.index'),
+            'transaksi' => route('admin.transaksi.index'),
+            default     => '#',
+        };
     }
+}
 @endphp
 
-<div class="row mt-4">
+{{-- HEADER --}}
+<div style="margin-bottom:1.5rem;">
+    <h2 style="font-size:1.4rem; font-weight:700; color:var(--text-main); margin:0;">
+        Selamat Datang,
+        @if(Auth::guard('superadmin')->check())
+            {{ Auth::guard('superadmin')->user()->first_name ?? 'Superadmin' }}!
+        @else
+            {{ Auth::user()->first_name ?? 'Admin' }}!
+        @endif
+    </h2>
+    <p style="font-size:.83rem; color:var(--text-muted); margin:.2rem 0 0;">Dashboard Sistem Informasi Destinasi Wisata CIAYUMAJAKUNING</p>
+</div>
 
-    <!-- Destinasi -->
-    <div class="col-md-3">
-        <a href="{{ routeByRole('destinasi') }}" class="text-decoration-none text-dark">
-            <div class="card card-stat shadow-sm card-click">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <small>Total Destinasi Wisata</small>
-                        <h4 class="fw-bold text-center w-100">{{ $totalDestinasi ?? 0 }}</h4>
-                    </div>
-                    <i class="bi bi-geo-alt fs-3 text-primary"></i>
-                </div>
+{{-- STAT CARDS --}}
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:.9rem; margin-bottom:1.25rem;">
+
+    {{-- Destinasi --}}
+    <a href="{{ routeByRole('destinasi') }}" style="text-decoration:none;">
+        <div class="card-stat" style="gap:12px; padding:16px 18px;">
+            <div class="stat-icon icon-blue" style="width:42px; height:42px; border-radius:10px; font-size:18px;">
+                <i class="bi bi-geo-alt"></i>
             </div>
-        </a>
-    </div>
+            <div class="stat-text">
+                <div class="stat-label">Total Destinasi</div>
+                <div class="stat-value" style="font-size:22px;">{{ $totalDestinasi ?? 0 }}</div>
+            </div>
+        </div>
+    </a>
 
-    <!-- Users (Super Admin Only) -->
+    {{-- Users (superadmin only) --}}
     @if(Auth::guard('superadmin')->check())
-    <div class="col-md-3">
-        <a href="{{ routeByRole('users') }}" class="text-decoration-none text-dark">
-            <div class="card card-stat shadow-sm card-click">
-                 <div class="d-flex justify-content-between">
-                    <div>
-                        <small>Total Pengguna</small>
-                        <h4 class="fw-bold text-center w-100">{{ $totalUsers ?? 0 }}</h4>
-                    </div>
-                    <i class="bi bi-people fs-3 text-success"></i>
-                </div>
+    <a href="{{ routeByRole('users') }}" style="text-decoration:none;">
+        <div class="card-stat" style="gap:12px; padding:16px 18px;">
+            <div class="stat-icon icon-teal" style="width:42px; height:42px; border-radius:10px; font-size:18px;">
+                <i class="bi bi-people"></i>
             </div>
-        </a>
-    </div>
+            <div class="stat-text">
+                <div class="stat-label">Total Pengguna</div>
+                <div class="stat-value" style="font-size:22px;">{{ $totalUsers ?? 0 }}</div>
+            </div>
+        </div>
+    </a>
     @endif
 
-    <!-- Transaksi -->
-<div class="col-md-3">
-    <a href="{{ routeByRole('transaksi') }}" class="text-decoration-none text-dark">
-        <div class="card card-stat shadow-sm card-click">
-            <div class="d-flex justify-content-between">
-                <div>
-                   <small class="d-block text-center">Transaksi Bulan Ini</small>
-                   <h4 class="fw-bold text-center w-100">
-                       {{ $transaksiBulanIni ?? 0 }}
-                   </h4>
-                </div>
-                <i class="bi bi-cart fs-3 text-danger"></i>
+    {{-- Transaksi --}}
+    <a href="{{ routeByRole('transaksi') }}" style="text-decoration:none;">
+        <div class="card-stat" style="gap:12px; padding:16px 18px;">
+            <div class="stat-icon icon-orange" style="width:42px; height:42px; border-radius:10px; font-size:18px;">
+                <i class="bi bi-cart3"></i>
+            </div>
+            <div class="stat-text">
+                <div class="stat-label">Transaksi Bulan Ini</div>
+                <div class="stat-value" style="font-size:22px;">{{ $transaksiBulanIni ?? 0 }}</div>
             </div>
         </div>
     </a>
-</div>
 
-<!-- Pendapatan -->
-<div class="col-md-3">
-    <a href="{{ routeByRole('transaksi') }}" class="text-decoration-none text-dark">
-        <div class="card card-stat shadow-sm card-click">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <small>Pendapatan</small>
-                    <h4 class="fw-bold text-center w-100">
-                        Rp {{ number_format($pendapatanBulanIni ?? 0, 0, ',', '.') }}
-                    </h4>
+    {{-- Pendapatan --}}
+    <a href="{{ routeByRole('transaksi') }}" style="text-decoration:none;">
+        <div class="card-stat" style="gap:12px; padding:16px 18px;">
+            <div class="stat-icon icon-purple" style="width:42px; height:42px; border-radius:10px; font-size:18px;">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="stat-text">
+                <div class="stat-label">Pendapatan</div>
+                <div class="stat-value" style="font-size:16px; font-weight:700;">
+                    Rp {{ number_format($pendapatanBulanIni ?? 0, 0, ',', '.') }}
                 </div>
-                <i class="bi bi-currency-dollar fs-3 text-warning"></i>
             </div>
         </div>
     </a>
+
 </div>
 
+{{-- BOTTOM ROW --}}
+<div style="display:grid; grid-template-columns:1fr 300px; gap:.9rem;">
 
-<div class="row mt-4">
-
-    <!-- Aktivitas -->
-    <div class="col-md-8">
-        <div class="card p-4 shadow-sm">
-            <h6 class="fw-bold mb-3">Aktivitas Terkini</h6>
-
+    {{-- AKTIVITAS TERKINI --}}
+    <div class="card-panel">
+        <div class="card-panel-header">
+            <h6>Aktivitas Terkini</h6>
+            <span class="header-badge">{{ count($activities) }} aktivitas</span>
+        </div>
+        <div class="card-panel-body" style="padding:0;">
             @forelse($activities as $item)
-<a href="{{ routeByRole('destinasi') }}" class="text-decoration-none text-dark">
-
-<div class="activity-item card-click d-flex justify-content-between align-items-center">
-        
-        <div>
-            <strong>{{ $item->user_name }}</strong>
-            <small class="text-muted d-block">{{ $item->activity }}</small>
-        </div>
-
-        <span class="badge bg-success">
-            {{ $item->status }}
-        </span>
-
-</div>
-
-</a>
-@empty
-<div class="text-muted">
-    Belum ada aktivitas
-</div>
-@endforelse
-
+            <a href="{{ routeByRole('destinasi') }}" style="text-decoration:none; display:block;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px; border-bottom:1px solid #f0f6ff; gap:12px;"
+                     onmouseover="this.style.background='#f8fbff'" onmouseout="this.style.background=''">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:7px; height:7px; border-radius:50%; background:var(--blue-bright); flex-shrink:0;"></div>
+                        <div>
+                            <div style="font-size:.83rem; font-weight:600; color:var(--text-main);">{{ $item->user_name }}</div>
+                            <div style="font-size:.75rem; color:var(--text-muted); margin-top:1px;">{{ $item->activity }}</div>
+                        </div>
+                    </div>
+                    <span style="background:#EAF3DE; color:#3B6D11; font-size:11px; font-weight:500; padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0;">
+                        {{ $item->status }}
+                    </span>
+                </div>
+            </a>
+            @empty
+            <div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:13px;">
+                <i class="bi bi-inbox" style="font-size:22px; display:block; margin-bottom:.4rem;"></i>
+                Belum ada aktivitas
+            </div>
+            @endforelse
         </div>
     </div>
 
-    <!-- Kategori -->
-    <div class="col-md-4">
-        <div class="card p-4 shadow-sm">
-            <h6 class="fw-bold mb-3">Kategori Wisata</h6>
+    {{-- KATEGORI WISATA --}}
+    <div class="card-panel">
+        <div class="card-panel-header">
+            <h6>Kategori Wisata</h6>
+        </div>
+        <div class="card-panel-body">
+            @php
+            $kategoriList = [
+                'Pantai'          => ['icon' => 'bi-sun',          'color' => '#ea8c3b', 'bg' => '#fff3e8'],
+                'Gunung & Alam'   => ['icon' => 'bi-tree',         'color' => '#0d9488', 'bg' => '#e6f9f5'],
+                'Budaya & Sejarah'=> ['icon' => 'bi-bank',         'color' => '#7c3aed', 'bg' => '#f0eaff'],
+                'Curug'           => ['icon' => 'bi-water',        'color' => '#2e8de8', 'bg' => '#e8f3fd'],
+                'Taman Air'       => ['icon' => 'bi-droplet-fill', 'color' => '#1a6bbf', 'bg' => '#dbeafe'],
+            ];
+            @endphp
 
-            <ul class="list-unstyled">
-    @php
-        $kategoriRoutes = ['Pantai', 'Gunung & Alam', 'Budaya & Sejarah', 'Curug', 'Taman Air'];
-
-        $icons = [
-    'Pantai' => 'bi-sun text-warning',
-    'Gunung & Alam' => 'bi-tree text-success',
-    'Budaya & Sejarah' => 'bi-bank text-warning',
-    'Curug' => 'bi-water text-info',
-    'Taman Air' => 'bi-droplet-fill text-primary'
-];
-    @endphp
-
-    @foreach($kategoriRoutes as $kategori)
-        <li>
-            <a href="{{ routeByRole('destinasi') }}" class="text-decoration-none text-dark">
-                <i class="bi {{ $icons[$kategori] }} me-2"></i> {{ $kategori }}
-            </a>
-        </li>
-    @endforeach
-</ul>
-
+            <div style="display:flex; flex-direction:column; gap:.5rem;">
+                @foreach($kategoriList as $nama => $style)
+                <a href="{{ routeByRole('destinasi') }}" style="text-decoration:none; display:flex; align-items:center; gap:.65rem; padding:.5rem .65rem; border-radius:8px; transition:background .15s;"
+                   onmouseover="this.style.background='var(--bg-page)'" onmouseout="this.style.background=''">
+                    <div style="width:30px; height:30px; border-radius:8px; background:{{ $style['bg'] }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="bi {{ $style['icon'] }}" style="color:{{ $style['color'] }}; font-size:14px;"></i>
+                    </div>
+                    <span style="font-size:.83rem; font-weight:500; color:var(--text-main);">{{ $nama }}</span>
+                </a>
+                @endforeach
+            </div>
         </div>
     </div>
 
