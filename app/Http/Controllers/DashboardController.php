@@ -91,6 +91,7 @@ class DashboardController extends Controller
             'transaksiBulanIni',
             'pendapatanBulanIni',
             'activities'
+
         ));
     }
 
@@ -348,7 +349,6 @@ $perempuanPersen = $totalGender > 0 ? round(($perempuan / $totalGender) * 100, 1
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('transaksi.cetak', compact('pemesanan'));
-
         return $pdf->download('laporan-transaksi.pdf');
     }
 }

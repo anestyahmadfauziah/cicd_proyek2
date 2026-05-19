@@ -30,4 +30,10 @@ return [
         'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
     ],
 
+    'supabase' => [
+    'url'    => env('SUPABASE_URL'),
+    'key'    => env('SUPABASE_SERVICE_KEY'),
+    'bucket' => env('SUPABASE_BUCKET', 'destinasi'),
+    ],
+
 ];
