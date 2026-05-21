@@ -77,5 +77,5 @@ class SupabaseStorage
     ])->delete("{$this->url}/storage/v1/object/{$this->bucket}", [
         'prefixes' => [$filePath]
     ]);
-
+}
 }
