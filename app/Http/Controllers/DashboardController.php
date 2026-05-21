@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Services\SupabaseStorage;
 
 use App\Models\Destinasi;
 use App\Models\User;
@@ -243,37 +244,52 @@ $perempuanPersen = $totalGender > 0 ? round(($perempuan / $totalGender) * 100, 1
     }
 
     public function updateProfile(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'nullable|string|max:255',
-            'email'      => 'required|email|max:255',
-            'phone'      => 'nullable|string|max:20',
-            'bio'        => 'nullable|string',
-            'location'   => 'nullable|string|max:255',
-        ]);
+{
+    $request->validate([
+        'first_name'  => 'required|string|max:255',
+        'last_name'   => 'nullable|string|max:255',
+        'email'       => 'required|email|max:255',
+        'phone'       => 'nullable|string|max:20',
+        'bio'         => 'nullable|string',
+        'location'    => 'nullable|string|max:255',
+        'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        if (auth('superadmin')->check()) {
-            $user = auth('superadmin')->user();
-        } else {
-            $user = auth('web')->user();
-        }
-
-        if (!$user) {
-            return back()->with('error', 'User tidak ditemukan, silakan login ulang');
-        }
-
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'phone'      => $request->phone,
-            'bio'        => $request->bio,
-            'location'   => $request->location,
-        ]);
-
-        return back()->with('success', 'Profil berhasil disimpan');
+    if (auth('superadmin')->check()) {
+        $user = auth('superadmin')->user();
+    } else {
+        $user = auth('web')->user();
     }
+
+    if (!$user) {
+        return back()->with('error', 'User tidak ditemukan');
+    }
+
+    // upload foto profil ke supabase
+    if ($request->hasFile('foto_profil')) {
+
+        $supabase = new SupabaseStorage();
+
+        $fotoUrl = $supabase->upload(
+            $request->file('foto_profil'),
+            'profiles'
+        );
+
+        // simpan url gambar
+        $user->foto_profil = $fotoUrl;
+    }
+
+    $user->first_name = $request->first_name;
+    $user->last_name  = $request->last_name;
+    $user->email      = $request->email;
+    $user->phone      = $request->phone;
+    $user->bio        = $request->bio;
+    $user->location   = $request->location;
+
+    $user->save();
+
+    return back()->with('success', 'Profil berhasil disimpan');
+}
 
     public function updatePassword(Request $request)
     {
@@ -352,3 +368,6 @@ $perempuanPersen = $totalGender > 0 ? round(($perempuan / $totalGender) * 100, 1
         return $pdf->download('laporan-transaksi.pdf');
     }
 }
+
+
+
