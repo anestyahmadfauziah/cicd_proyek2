@@ -22,7 +22,7 @@ class SupabaseStorage
     public function upload(UploadedFile $file, string $folder = 'covers'): string
 {
     // FIX S-01 & S-02: Whitelist ekstensi yang diizinkan
-    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov', 'avi', 'wmv'];
     $ext = strtolower($file->getClientOriginalExtension());
 
     if (!in_array($ext, $allowedExtensions, true)) {
@@ -30,7 +30,7 @@ class SupabaseStorage
     }
 
     // FIX S-03: Whitelist MIME type
-    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv'];
     $mime = $file->getMimeType() ?? 'application/octet-stream';
 
     if (!in_array($mime, $allowedMimes, true)) {
