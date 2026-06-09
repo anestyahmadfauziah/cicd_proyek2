@@ -10,39 +10,38 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  #apa aja
   # ─── JOB 1: TESTING ───────────────────────────────────────
-  # test: 
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
+  test: 
+    name: Run Tests
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Setup PHP
-  #       uses: shivammathur/setup-php@v2
-  #       with:
-  #         php-version: '8.2'
-  #         extensions: pdo, pdo_mysql, bcmath
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql, bcmath
 
-  #     - name: Install Composer dependencies
-  #       run: composer install --no-progress --prefer-dist
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
 
-  #     - name: Copy .env
-  #       run: cp .env.example .env
+      - name: Copy .env
+        run: cp .env.example .env
 
-  #     - name: Generate app key
-  #       run: php artisan key:generate
+      - name: Generate app key
+        run: php artisan key:generate
 
-  #     - name: Run PHPUnit tests
-  #       run: php artisan test
+      - name: Run PHPUnit tests
+        run: php artisan test
 
   # ─── JOB 2: BUILD & PUSH IMAGE ────────────────────────────
   build-and-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
-  # needs: test
+    needs: test
 
     permissions:
       contents: read
@@ -117,7 +116,6 @@ jobs:
 
             # Tunggu container siap
             echo "⏳ Menunggu container ready..."
-
 
             # Jalankan migrasi database
             docker compose exec -T app php artisan migrate --force --no-interaction 2>/dev/null || true
