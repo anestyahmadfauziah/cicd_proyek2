@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link href="{{ asset('css/admin/edit-destinasi.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 
 <div class="edit-destinasi-wrapper">

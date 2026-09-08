@@ -1,6 +1,14 @@
 {{-- resources/views/destinasi/index.blade.php --}}
 @extends('layouts.app')
 
+@push('styles')
+    <link href="{{ asset('css/admin/edit-destinasi.css') }}" rel="stylesheet">
+@endpush
+
+@push('styles')
+    <link href="{{ asset('css/admin/layout.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 @php
     $prefix = $prefix ?? 'admin';
@@ -14,9 +22,11 @@
             <h2 class="fw-bold mb-0" style="font-size:1.4rem; color:var(--text-main);">Destinasi Wisata</h2>
             <small style="color:var(--text-muted);">Kelola dan pantau semua destinasi wisata</small>
         </div>
-        <a href="{{ route($prefix.'.destinasi.create') }}" class="btn-tambah-user">
-            <i class="bi bi-plus-lg"></i> Tambah Destinasi
-        </a>
+        <a href="{{ route($prefix.'.destinasi.create') }}"
+   class="btn px-4 shadow-sm"
+   style="background:#1a6bbf; color:#fff;">
+    <i class="bi bi-plus-lg"></i> Tambah Destinasi
+</a>
     </div>
 
     {{-- SEARCH --}}

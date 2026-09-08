@@ -1,0 +1,149 @@
+/* ============================================================
+   KELOLA-USER.CSS — khusus halaman Kelola Users (superadmin)
+   Load hanya di view: superadmin/users/index.blade.php
+   ============================================================ */
+
+.stat-simple {
+    background: #f0f6ff;
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+.stat-simple .stat-simple-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+.stat-simple .stat-simple-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.user-table-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+.user-table-card table { font-size: 13px; }
+.user-table-card thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--bg-page);
+    padding: 10px 16px;
+}
+.user-table-card tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+.user-table-card tbody tr:hover td { background: #f8fbff; }
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e8f3fd;
+    color: #0C447C;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.badge-role-admin {
+    background: #EAF3DE;
+    color: #3B6D11;
+    border: 0.5px solid #C0DD97;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-role-user {
+    background: #E6F1FB;
+    color: #0C447C;
+    border: 0.5px solid #85B7EB;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-status-active {
+    background: #EAF3DE;
+    color: #3B6D11;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-status-inactive {
+    background: #f1f1f1;
+    color: #6c757d;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.btn-tambah-user {
+    background: #E6F1FB;
+    color: #0C447C;
+    border: 0.5px solid #85B7EB;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.btn-tambah-user:hover {
+    background: #d0e8f8;
+    color: #0C447C;
+}
+
+.btn-hapus {
+    background: none;
+    border: none;
+    color: #adb5bd;
+    border-radius: 6px;
+    padding: 4px 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+.btn-hapus:hover {
+    color: #A32D2D;
+    background: #FCEBEB;
+}

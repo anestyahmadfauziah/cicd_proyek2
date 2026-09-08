@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link href="{{ asset('css/admin/form-user.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 <div class="container py-4" style="max-width: 680px;">
 

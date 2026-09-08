@@ -1,0 +1,39 @@
+/* ============================================================
+   FORM-USER.CSS — khusus halaman Tambah/Edit User
+   Load hanya di view: superadmin/users/create.blade.php (atau edit)
+   ============================================================ */
+
+.form-user-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-card);
+    padding: 1.5rem;
+}
+.form-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+.badge-role-fixed {
+    background: #EAF3DE;
+    color: #3B6D11;
+    border: 0.5px solid #C0DD97;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.badge-role-fixed .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #639922;
+    display: inline-block;
+}
